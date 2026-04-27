@@ -1,0 +1,14 @@
+[Unit]
+Description=Reproduccion en bucle de videos USB al arranque
+After=default.target
+
+[Service]
+Type=simple
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+ExecStart=/home/pi/usb-video-loop.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
