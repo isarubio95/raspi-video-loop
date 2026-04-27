@@ -38,6 +38,7 @@ while true; do
   /usr/bin/cvlc \
     --fullscreen \
     --no-video-title-show \
+    --avcodec-hw=none \
     --loop \
     "$PLAYLIST"
   sleep 1

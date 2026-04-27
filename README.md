@@ -46,13 +46,13 @@ Flujo actual:
 2. Detecta videos con extensiones `mp4`, `mkv`, `avi`, `mov`, `webm`.
 3. Si no hay videos, termina con error.
 4. Genera playlist en `/tmp/usb-video-loop.m3u`.
-5. Lanza `cvlc` en fullscreen con `--loop` sobre la playlist.
+5. Lanza `cvlc` en fullscreen con `--loop` sobre la playlist y `--avcodec-hw=none` para mejorar estabilidad en transiciones.
 6. Si VLC termina, el script lo relanza tras `sleep 1`.
 
 Comando clave de reproduccion:
 
 ```bash
-/usr/bin/cvlc --fullscreen --no-video-title-show --loop /tmp/usb-video-loop.m3u
+/usr/bin/cvlc --fullscreen --no-video-title-show --avcodec-hw=none --loop /tmp/usb-video-loop.m3u
 ```
 
 ## 5) Comandos usados durante la implementacion
@@ -82,7 +82,7 @@ journalctl --user -u usb-video-loop.service -n 120 --no-pager
 bash -n /home/pi/usb-video-loop.sh
 command -v vlc
 vlc --version
-DISPLAY=:0 XAUTHORITY=/home/pi/.Xauthority /usr/bin/cvlc --fullscreen --no-video-title-show --loop /tmp/usb-video-loop.m3u
+DISPLAY=:0 XAUTHORITY=/home/pi/.Xauthority /usr/bin/cvlc --fullscreen --no-video-title-show --avcodec-hw=none --loop /tmp/usb-video-loop.m3u
 ```
 
 ### Despliegue/reinicio
@@ -120,8 +120,18 @@ ls -1 /media/pi/KINGSTON
 - Lanza VLC manualmente con la misma playlist:
 
 ```bash
-DISPLAY=:0 XAUTHORITY=/home/pi/.Xauthority /usr/bin/cvlc --fullscreen --no-video-title-show --loop /tmp/usb-video-loop.m3u
+DISPLAY=:0 XAUTHORITY=/home/pi/.Xauthority /usr/bin/cvlc --fullscreen --no-video-title-show --avcodec-hw=none --loop /tmp/usb-video-loop.m3u
 ```
+
+### Error `xdg_surface` al pasar de un video a otro
+
+Si en logs aparece `xdg_surface ... has never been configured`, aplicar o verificar el flag:
+
+```bash
+--avcodec-hw=none
+```
+
+Este ajuste evita cierres al cambiar entre videos con distinta resolucion en algunos entornos Wayland/DRM de Raspberry Pi.
 
 ### No arranca tras reiniciar
 
@@ -155,4 +165,5 @@ usb-video-loop-docs/
 - Servicio habilitado: `enabled`
 - Servicio activo: `active`
 - Reproduccion basada en playlist `.m3u` para continuidad
+- Flag de estabilidad aplicado: `--avcodec-hw=none`
 
